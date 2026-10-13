@@ -43,6 +43,6 @@ void	dongle_release(t_dongle *dongle, t_ms now,
 {
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->in_use = 0;
-	dongle->cooldown_until = now + cooldown;
+	dongle->cooldown_until = deadline_ms(now, cooldown);
 	pthread_mutex_unlock(&dongle->mutex);
 }

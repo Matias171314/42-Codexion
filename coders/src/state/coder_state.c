@@ -12,13 +12,6 @@
 
 #include "codexion.h"
 
-void	coder_set_compile_start(t_coder *coder, t_ms timestamp)
-{
-	pthread_mutex_lock(&coder->state_mutex);
-	coder->last_compile_start = timestamp;
-	pthread_mutex_unlock(&coder->state_mutex);
-}
-
 void	coder_increment_compile_count(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->state_mutex);

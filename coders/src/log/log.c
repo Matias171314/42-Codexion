@@ -28,7 +28,28 @@ static const char	*event_message(t_log_event event)
 	return (NULL);
 }
 
-void	log_event(t_coder *coder, t_log_event event)
+static int	prepare_event(t_coder *coder, t_log_event event, t_ms now)
+{
+	t_ms	deadline;
+	int		valid;
+
+	if (event != LOG_COMPILING && event != LOG_BURNOUT)
+		return (1);
+	pthread_mutex_lock(&coder->state_mutex);
+	deadline = deadline_ms(coder->last_compile_start,
+			coder->sim->config.time_to_burnout);
+	valid = (now < deadline);
+	if (event == LOG_BURNOUT)
+		valid = !valid;
+	if (valid && event == LOG_COMPILING)
+		coder->last_compile_start = now;
+	if (valid && event == LOG_BURNOUT)
+		coder->sim->stopped = 1;
+	pthread_mutex_unlock(&coder->state_mutex);
+	return (valid);
+}
+
+int	log_event(t_coder *coder, t_log_event event)
 {
 	t_sim		*sim;
 	const char	*message;
@@ -37,18 +58,17 @@ void	log_event(t_coder *coder, t_log_event event)
 	sim = coder->sim;
 	message = event_message(event);
 	if (!message)
-		return ;
+		return (0);
 	pthread_mutex_lock(&sim->stop_mutex);
-	if (sim->stopped)
+	timestamp = elapsed_ms(sim);
+	if (sim->stopped || !prepare_event(coder, event, timestamp))
 	{
 		pthread_mutex_unlock(&sim->stop_mutex);
-		return ;
+		return (0);
 	}
-	if (event == LOG_BURNOUT)
-		sim->stopped = 1;
-	timestamp = elapsed_ms(sim);
 	pthread_mutex_lock(&sim->print_mutex);
 	printf("%lld %d %s\n", timestamp, coder->id, message);
 	pthread_mutex_unlock(&sim->print_mutex);
 	pthread_mutex_unlock(&sim->stop_mutex);
+	return (1);
 }

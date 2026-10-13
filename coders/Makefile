@@ -43,7 +43,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-%.o: %.c
+%.o: %.c includes/codexion.h
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:

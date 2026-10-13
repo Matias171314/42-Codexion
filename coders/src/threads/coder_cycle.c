@@ -20,18 +20,14 @@ static void	release_dongles(t_coder *coder)
 static int	begin_compile(t_coder *coder)
 {
 	t_sim	*sim;
-	t_ms	start;
 
 	sim = coder->sim;
 	if (!scheduler_request_dongles(coder))
 		return (0);
 	log_event(coder, LOG_TAKEN_DONGLE);
 	log_event(coder, LOG_TAKEN_DONGLE);
-	if (sim_is_stopped(sim))
+	if (!log_event(coder, LOG_COMPILING))
 		return (release_dongles(coder), 0);
-	start = elapsed_ms(sim);
-	coder_set_compile_start(coder, start);
-	log_event(coder, LOG_COMPILING);
 	if (sim_is_stopped(sim))
 		return (release_dongles(coder), 0);
 	return (1);

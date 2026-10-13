@@ -240,6 +240,10 @@ It protects coder-specific state such as:
 - `compile_count`.
 
 This state is accessed by both coder threads and the monitor thread.
+Compilation starts and burnout decisions acquire `stop_mutex` before `state_mutex`, recheck the
+current deadline, and update the state before logging. This prevents a late
+compilation from resetting an expired deadline and prevents the monitor from
+stopping the simulation based on an outdated deadline.
 
 ### Dongle mutexes
 
@@ -270,7 +274,9 @@ Each dongle stores:
 cooldown_until
 ```
 
-This is an absolute simulation timestamp rather than a countdown.
+This is an absolute simulation timestamp rather than a countdown. Additions
+that would exceed `LLONG_MAX` saturate at `LLONG_MAX` to prevent overflow
+and premature dongle reuse.
 
 If a dongle is released at `500 ms` with a cooldown of `50 ms`:
 

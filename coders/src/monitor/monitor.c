@@ -43,11 +43,9 @@ static int	check_burnout(t_sim *sim)
 	while (i < sim->config.number_of_coders)
 	{
 		deadline = get_coder_deadline(&sim->coders[i]);
-		if (now >= deadline)
-		{
-			log_event(&sim->coders[i], LOG_BURNOUT);
+		if (now >= deadline
+			&& log_event(&sim->coders[i], LOG_BURNOUT))
 			return (1);
-		}
 		i++;
 	}
 	return (0);

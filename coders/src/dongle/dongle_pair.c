@@ -75,7 +75,7 @@ void	dongles_release_pair(t_coder *coder, t_ms now)
 	lock_pair(first, second);
 	first->in_use = 0;
 	second->in_use = 0;
-	first->cooldown_until = now + cooldown;
-	second->cooldown_until = now + cooldown;
+	first->cooldown_until = deadline_ms(now, cooldown);
+	second->cooldown_until = deadline_ms(now, cooldown);
 	unlock_pair(first, second);
 }

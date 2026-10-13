@@ -139,7 +139,7 @@ int			sim_sleep(t_sim *sim, t_ms duration);
 
 /* Logging */
 
-void		log_event(t_coder *coder, t_log_event event);
+int			log_event(t_coder *coder, t_log_event event);
 
 /* Simulation state */
 
@@ -149,7 +149,6 @@ int			sim_all_compiles_completed(t_sim *sim);
 
 /* Coder state */
 
-void		coder_set_compile_start(t_coder *coder, t_ms timestamp);
 void		coder_increment_compile_count(t_coder *coder);
 
 /* Dongles */
